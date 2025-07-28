@@ -1,8 +1,10 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import cors from "cors";
-const PORT = 1009;
+import dotenv from "dotenv";
+import { chatSocket } from "./socket/chatSocket.js";
+dotenv.config();
+const PORT = process.env.PORT || 1009;
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -10,17 +12,8 @@ const io = new Server(server, {
     origin: "http://localhost:5173",
   },
 });
+chatSocket(io);
 
-io.on("connection", (socket) => {
-  console.log("User Connected");
-  socket.on("message", (message) => {
-    console.log(message);
-    io.emit("message", message);
-  });
-  socket.on("disconnect", () => {
-    console.log("User Disconnected");
-  });
-});
 server.listen(PORT, () => {
   console.log("DONE");
 });
